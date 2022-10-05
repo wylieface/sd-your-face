@@ -6,6 +6,10 @@ from modules import devices
 from modules.paths import script_path
 import signal
 import threading
+import base64
+from io import BytesIO
+from PIL import Image
+
 
 import modules.codeformer_model as codeformer
 import modules.extras
@@ -26,6 +30,19 @@ from modules import devices
 from modules import modelloader
 from modules.paths import script_path
 from modules.shared import cmd_opts
+
+modelloader.cleanup_models()
+modules.sd_models.setup_model()
+codeformer.setup_model(cmd_opts.codeformer_models_path)
+gfpgan.setup_model(cmd_opts.gfpgan_models_path)
+shared.face_restorers.append(modules.face_restoration.FaceRestoration())
+modelloader.load_upscalers()
+queue_lock = threading.Lock()
+modules.scripts.load_scripts(os.path.join(script_path, "scripts"))
+
+shared.sd_model = modules.sd_models.load_model()
+
+#shared.opts.onchange("sd_model_checkpoint", wrap_queued_call(lambda: modules.sd_models.reload_model_weights(shared.sd_model)))
 
 
 def run_test():
@@ -101,13 +118,25 @@ def run_test():
         enable_hr,
         scale_latent,
         denoising_strength,
-    ] + custom_inputs
+    ]
 
     print("Inputs: ", inputs)
 
     output = modules.txt2img.txt2img(*inputs)
 
     print("Output: ", output)
+
+    output[0][0].save('/content/testImage.jpg', 'JPEG')
+
+    #img = Image.fromarray(output[0][0], 'RGB')                  #Crée une image à partir de la matrice
+    buffer = BytesIO()
+    output[0][0].save(buffer,format="JPEG")                  #Enregistre l'image dans le buffer
+    myimage = buffer.getvalue()                     
+    #print ("data:image/jpeg;base64,"+base64.b64encode(myimage))
+    print ("Out1: ")
+    print (myimage)
+    print ("Out2: ")
+    print (base64.b64encode(myimage))
 
     # txt2img_args = dict(
     #             fn=wrap_gradio_gpu_call(modules.txt2img.txt2img),
