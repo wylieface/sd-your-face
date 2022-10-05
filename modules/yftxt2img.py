@@ -37,10 +37,12 @@ def yftxt2img(prompt: str, negative_prompt: str, prompt_style: str, prompt_style
     if cmd_opts.enable_console_prompts:
         print(f"\ntxt2img: {prompt}", file=shared.progress_print_out)
 
-    processed = modules.scripts.scripts_txt2img.run(p, *args)
+    processed = process_images(p)
 
-    if processed is None:
-        processed = process_images(p)
+    # processed = modules.scripts.scripts_txt2img.run(p, *args)
+
+    # if processed is None:
+        # processed = process_images(p)
 
     shared.total_tqdm.clear()
 

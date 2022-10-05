@@ -9,7 +9,7 @@ import threading
 import base64
 from io import BytesIO
 from PIL import Image
-
+import time
 
 import modules.codeformer_model as codeformer
 import modules.extras
@@ -24,6 +24,7 @@ import modules.sd_hijack
 import modules.sd_models
 import modules.shared as shared
 import modules.txt2img
+import modules.yftxt2img
 
 import modules.ui
 from modules import devices
@@ -45,7 +46,7 @@ shared.sd_model = modules.sd_models.load_model()
 #shared.opts.onchange("sd_model_checkpoint", wrap_queued_call(lambda: modules.sd_models.reload_model_weights(shared.sd_model)))
 
 
-def run_test():
+def run_test(new_prompt):
     print("Running Test")
 # def txt2img(prompt: str, negative_prompt: str, prompt_style: str, prompt_style2: str, steps: int, sampler_index: int, restore_faces: bool, tiling: bool, n_iter: int, batch_size: int, cfg_scale: float, seed: int, subseed: int, subseed_strength: float, seed_resize_from_h: int, seed_resize_from_w: int, seed_enable_extras: bool, height: int, width: int, enable_hr: bool, scale_latent: bool, denoising_strength: float, *args):
 # {'prompt': 'wyliefox person riding a dinosaur, riding dinosaur, stone age', 
@@ -74,18 +75,18 @@ def run_test():
 # 'processed': False, 
 # 'generation_info_js': None}
  
-    txt2img_prompt = "wyliefox person riding a white horse in space"
+    txt2img_prompt = new_prompt
     txt2img_negative_prompt = ""
     txt2img_prompt_style = ""
     txt2img_prompt_style2 = ""
-    steps = 20
+    steps = 50
     sampler_index = 0
     restore_faces = False
     tiling = False
     batch_count = 1
     batch_size = 1
-    cfg_scale = 7
-    seed = 100
+    cfg_scale = 9
+    seed = -1
     subseed = -1
     subseed_strength = 0
     seed_resize_from_h = 0
@@ -122,11 +123,13 @@ def run_test():
 
     print("Inputs: ", inputs)
 
-    output = modules.txt2img.txt2img(*inputs)
+    output = modules.yftxt2img.yftxt2img(*inputs)
 
     print("Output: ", output)
 
-    output[0][0].save('/content/testImage.jpg', 'JPEG')
+    filepath = '/content/' + str(time.time()) + '.jpg'
+
+    output[0][0].save(filepath, 'JPEG')
 
     #img = Image.fromarray(output[0][0], 'RGB')                  #Crée une image à partir de la matrice
     buffer = BytesIO()
@@ -169,5 +172,10 @@ def run_test():
     #             show_progress=False,
     #         )
 
+def run_interactive():
+  while 1:
+    prompt = input("Prompt: ")
+    run_test(prompt)
+
 if __name__ == "__main__":
-    run_test()
+    run_interactive()
