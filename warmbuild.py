@@ -5,40 +5,6 @@ import sys
 import importlib.util
 import shlex
 
-## second part of script
-import threading
-import time
-import importlib
-from modules import devices
-from modules.paths import script_path
-import signal
-import threading
-import base64
-from io import BytesIO
-from PIL import Image
-import time
-import gdown
-
-import modules.codeformer_model as codeformer
-import modules.extras
-import modules.face_restoration
-import modules.gfpgan_model as gfpgan
-import modules.img2img
-
-import modules.lowvram
-import modules.paths
-import modules.scripts
-import modules.sd_hijack
-import modules.sd_models
-import modules.shared as shared
-import modules.txt2img
-import modules.yftxt2img
-
-import modules.ui
-from modules import devices
-from modules import modelloader
-from modules.paths import script_path
-from modules.shared import cmd_opts
 
 print("Running warm-build.py")
 
@@ -170,6 +136,43 @@ sys.argv += args
 
 print("End of first stage")
 
+
+## second part of script
+import threading
+import time
+import importlib
+from modules import devices
+from modules.paths import script_path
+import signal
+import threading
+import base64
+from io import BytesIO
+from PIL import Image
+import time
+import gdown
+
+import modules.codeformer_model as codeformer
+import modules.extras
+import modules.face_restoration
+import modules.gfpgan_model as gfpgan
+import modules.img2img
+
+import modules.lowvram
+import modules.paths
+import modules.scripts
+import modules.sd_hijack
+import modules.sd_models
+import modules.shared as shared
+import modules.txt2img
+import modules.yftxt2img
+
+import modules.ui
+from modules import devices
+from modules import modelloader
+from modules.paths import script_path
+from modules.shared import cmd_opts
+
+
 print("Downloading warming model")
 id = "1mSY7Z_8_PZxa5s7Ge8vaQTnHEdrGazsO"
 test_model_filepath = "models/Stable-diffusion/wyliefox_model.ckpt"
@@ -247,9 +250,9 @@ output = modules.yftxt2img.yftxt2img(*inputs)
 
 print("Test generation complete")
 
-if "--no-delete" not in args:
-    print("Removing warmup model")
-    os.remove(test_model_filepath)
+# if "--no-delete" not in args:
+#     print("Removing warmup model")
+#     os.remove(test_model_filepath)
 
 print("Warm build complete")
 exit(0)
